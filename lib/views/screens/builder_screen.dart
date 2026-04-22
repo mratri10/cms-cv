@@ -2,12 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:convert';
 import '../../controllers/cv_controller.dart';
 import '../../services/pdf_generator.dart';
 import 'form_screen.dart';
 
 class BuilderScreen extends StatelessWidget {
   const BuilderScreen({super.key});
+
+  Future<void> _handleImportData(BuildContext context, CvController cvController) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+      withData: true,
+    );
+
+    if (result != null && result.files.single.bytes != null) {
+      if (!context.mounted) return;
+
+      try {
+        final jsonStr = utf8.decode(result.files.single.bytes!);
+        final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
+        
+        if (!parsed.containsKey('profile') || !parsed.containsKey('config')) {
+          throw Exception("Invalid CV Backup format. Missing required nodes.");
+        }
+
+        final confirm = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Overwrite Alert'),
+            content: const Text('Importing this file will completely overwrite your current browser data. Please ensure you have backed up any recent changes. Proceed?'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () => Navigator.pop(ctx, true), 
+                child: const Text('Overwrite Data', style: TextStyle(color: Colors.white))
+              ),
+            ],
+          )
+        );
+
+        if (confirm == true) {
+          cvController.loadFromJson(jsonStr);
+          await cvController.saveToDb();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Imported and saved successfully!')),
+            );
+          }
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Import Failed: $e')),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +112,34 @@ class BuilderScreen extends StatelessWidget {
                     },
                   ),
                 ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.save, color: Colors.white),
+                tooltip: 'Save to SQLite Wasm DB',
+                onPressed: () async {
+                  await cvController.saveToDb();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Saved successfully to local database!')),
+                    );
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.upload_file, color: Colors.white),
+                tooltip: 'Import JSON Backup',
+                onPressed: () => _handleImportData(context, cvController),
+              ),
+              IconButton(
+                icon: const Icon(Icons.download, color: Colors.white),
+                tooltip: 'Export Backup JSON',
+                onPressed: () {
+                  cvController.exportBackupJson();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Downloading backup file...')),
+                  );
+                },
               ),
               const SizedBox(width: 16),
             ],

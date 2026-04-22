@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:html' as html;
 import '../models/cv_model.dart';
+import '../repositories/cv_repository.dart';
 
 class CvController extends ChangeNotifier {
+  CvRepository? repository;
   CvData _data = CvData.empty();
 
   CvData get data => _data;
+
+  // --- Database Persistence ---
+  Future<void> initFromDb() async {
+    if (repository != null) {
+      final loaded = await repository!.loadLatestCv();
+      if (loaded != null) {
+        _data = loaded;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> saveToDb() async {
+    if (repository != null) {
+      await repository!.saveCvData(_data);
+    }
+  }
+
+  void exportBackupJson() {
+    final jsonData = jsonEncode(_data.toJson());
+    final bytes = utf8.encode(jsonData);
+    final blob = html.Blob([bytes], 'application/json');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    
+    final timestamp = "${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}";
+    final anchor = html.AnchorElement(href: url)
+      ..target = 'blank'
+      ..download = 'my_cv_backup_$timestamp.json';
+      
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+    html.Url.revokeObjectUrl(url);
+  }
 
   // Initialize state directly from an entire JSON payload block
   void loadFromJson(String jsonString) {
