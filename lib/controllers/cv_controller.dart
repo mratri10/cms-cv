@@ -1,3 +1,4 @@
+import 'package:cms_cv/util/const.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:html' as html;
@@ -32,12 +33,13 @@ class CvController extends ChangeNotifier {
     final bytes = utf8.encode(jsonData);
     final blob = html.Blob([bytes], 'application/json');
     final url = html.Url.createObjectUrlFromBlob(blob);
-    
-    final timestamp = "${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}";
+
+    final timestamp =
+        "${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}";
     final anchor = html.AnchorElement(href: url)
       ..target = 'blank'
       ..download = 'my_cv_backup_$timestamp.json';
-      
+
     html.document.body?.append(anchor);
     anchor.click();
     anchor.remove();
@@ -81,7 +83,8 @@ class CvController extends ChangeNotifier {
   }
 
   void addAppliedJob(String job) {
-    if (job.trim().isNotEmpty && !_data.profile.appliedJobs.contains(job.trim())) {
+    if (job.trim().isNotEmpty &&
+        !_data.profile.appliedJobs.contains(job.trim())) {
       _data.profile.appliedJobs.add(job.trim());
       notifyListeners();
     }
@@ -95,13 +98,15 @@ class CvController extends ChangeNotifier {
   // --- Work Experience Architecture ---
   void addWorkExperience(String companyName) {
     if (companyName.trim().isNotEmpty) {
-      _data.workExperience.add(WorkExperience(
-        id: DateTime.now().millisecondsSinceEpoch, // Generate pseudo-ID
-        companyName: companyName.trim(),
-        phoneNumber: '',
-        officeImages: [],
-        roles: [],
-      ));
+      _data.workExperience.add(
+        WorkExperience(
+          id: DateTime.now().millisecondsSinceEpoch, // Generate pseudo-ID
+          companyName: companyName.trim(),
+          phoneNumber: '',
+          officeImages: [],
+          roles: [],
+        ),
+      );
       notifyListeners();
     }
   }
@@ -113,63 +118,105 @@ class CvController extends ChangeNotifier {
     }
   }
 
-  void addRole(int workIndex, String roleName, String supervisor) {
-    if (workIndex >= 0 && workIndex < _data.workExperience.length && roleName.trim().isNotEmpty) {
-      _data.workExperience[workIndex].roles.add(Role(
-        roleName: roleName.trim(),
-        supervisor: supervisor.trim(),
-        salary: 0,
-        startDate: DateTime.now().toIso8601String().split('T').first,
-        isCurrent: true,
-      ));
+  void addRole(int workIndex, String roleName, String supervisor, {bool isCurrent = true, String? endDate}) {
+    if (workIndex >= 0 &&
+        workIndex < _data.workExperience.length &&
+        roleName.trim().isNotEmpty) {
+      _data.workExperience[workIndex].roles.add(
+        Role(
+          roleName: roleName.trim(),
+          supervisor: supervisor.trim(),
+          salary: 0,
+          startDate: DateTime.now().toIso8601String().split('T').first,
+          endDate: endDate,
+          isCurrent: isCurrent,
+        ),
+      );
       notifyListeners();
     }
   }
 
   void removeRole(int workIndex, int roleIndex) {
     if (workIndex >= 0 && workIndex < _data.workExperience.length) {
-      if (roleIndex >= 0 && roleIndex < _data.workExperience[workIndex].roles.length) {
+      if (roleIndex >= 0 &&
+          roleIndex < _data.workExperience[workIndex].roles.length) {
         _data.workExperience[workIndex].roles.removeAt(roleIndex);
         notifyListeners();
       }
     }
   }
 
-  // --- Skills Architecture ---
-  void addSkillCategory(String name) {
-    if (name.trim().isNotEmpty) {
-      _data.skillCategories.add(SkillCategory(categoryName: name.trim(), skills: []));
+  void addSkill(SkillEnum category, String skillName, String description) {
+    List<Skill> skillsList;
+    switch (category) {
+      case SkillEnum.language:
+        skillsList = _data.languageSkills;
+        break;
+      case SkillEnum.hard:
+        skillsList = _data.hardSkills;
+        break;
+      case SkillEnum.soft:
+        skillsList = _data.softSkills;
+        break;
+    }
+
+    if (skillName.trim().isNotEmpty) {
+      skillsList.add(
+        Skill(
+          id: DateTime.now().millisecondsSinceEpoch,
+          name: skillName.trim(),
+          description: description.trim(),
+          isCertified: false,
+          certificateLink: '',
+          relatedCompanyIds: [],
+        ),
+      );
       notifyListeners();
     }
   }
 
-  void removeSkillCategory(int index) {
-    if (index >= 0 && index < _data.skillCategories.length) {
-      _data.skillCategories.removeAt(index);
+  void removeSkill(SkillEnum category, int skillIndex) {
+    List<Skill> skillsList;
+    switch (category) {
+      case SkillEnum.language:
+        skillsList = _data.languageSkills;
+        break;
+      case SkillEnum.hard:
+        skillsList = _data.hardSkills;
+        break;
+      case SkillEnum.soft:
+        skillsList = _data.softSkills;
+        break;
+    }
+
+    if (skillIndex >= 0 && skillIndex < skillsList.length) {
+      skillsList.removeAt(skillIndex);
       notifyListeners();
     }
   }
 
-  void addSkill(int categoryIndex, String skillName, String description) {
-    if (categoryIndex >= 0 && categoryIndex < _data.skillCategories.length && skillName.trim().isNotEmpty) {
-      _data.skillCategories[categoryIndex].skills.add(Skill(
-        id: DateTime.now().millisecondsSinceEpoch,
-        name: skillName.trim(),
-        description: description.trim(),
-        isCertified: false,
-        certificateLink: '',
-        relatedCompanyIds: [],
-      ));
-      notifyListeners();
+  void toggleSkillCompany(SkillEnum category, int skillIndex, int companyId) {
+    List<Skill> skillsList;
+    switch (category) {
+      case SkillEnum.language:
+        skillsList = _data.languageSkills;
+        break;
+      case SkillEnum.hard:
+        skillsList = _data.hardSkills;
+        break;
+      case SkillEnum.soft:
+        skillsList = _data.softSkills;
+        break;
     }
-  }
 
-  void removeSkill(int categoryIndex, int skillIndex) {
-    if (categoryIndex >= 0 && categoryIndex < _data.skillCategories.length) {
-      if (skillIndex >= 0 && skillIndex < _data.skillCategories[categoryIndex].skills.length) {
-        _data.skillCategories[categoryIndex].skills.removeAt(skillIndex);
-        notifyListeners();
+    if (skillIndex >= 0 && skillIndex < skillsList.length) {
+      final skill = skillsList[skillIndex];
+      if (skill.relatedCompanyIds.contains(companyId)) {
+        skill.relatedCompanyIds.remove(companyId);
+      } else {
+        skill.relatedCompanyIds.add(companyId);
       }
+      notifyListeners();
     }
   }
 
@@ -191,12 +238,14 @@ class CvController extends ChangeNotifier {
   // --- Education Architecture ---
   void addEducation(String schoolName, String major) {
     if (schoolName.trim().isNotEmpty) {
-      _data.educationHistory.add(EducationHistory(
-        schoolName: schoolName.trim(),
-        major: major.trim(),
-        startDate: DateTime.now().toIso8601String().split('T').first,
-        endDate: '',
-      ));
+      _data.educationHistory.add(
+        EducationHistory(
+          schoolName: schoolName.trim(),
+          major: major.trim(),
+          startDate: DateTime.now().toIso8601String().split('T').first,
+          endDate: '',
+        ),
+      );
       notifyListeners();
     }
   }

@@ -60,11 +60,11 @@ class FormScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SkillSection(cvController: cvController),
+                const SizedBox(height: 32),
                 WorkExperienceSection(cvController: cvController),
                 const SizedBox(height: 32),
                 EducationSection(cvController: cvController),
-                const SizedBox(height: 32),
-                SkillSection(cvController: cvController),
               ],
             ),
           ),

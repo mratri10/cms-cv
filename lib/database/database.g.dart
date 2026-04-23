@@ -1355,266 +1355,6 @@ class RolesCompanion extends UpdateCompanion<RoleRow> {
   }
 }
 
-class $SkillCategoriesTable extends SkillCategories
-    with TableInfo<$SkillCategoriesTable, SkillCategoryRow> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $SkillCategoriesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _profileIdMeta = const VerificationMeta(
-    'profileId',
-  );
-  @override
-  late final GeneratedColumn<int> profileId = GeneratedColumn<int>(
-    'profile_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES profiles (id)',
-    ),
-  );
-  static const VerificationMeta _categoryNameMeta = const VerificationMeta(
-    'categoryName',
-  );
-  @override
-  late final GeneratedColumn<String> categoryName = GeneratedColumn<String>(
-    'category_name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, profileId, categoryName];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'skill_categories';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<SkillCategoryRow> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('profile_id')) {
-      context.handle(
-        _profileIdMeta,
-        profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_profileIdMeta);
-    }
-    if (data.containsKey('category_name')) {
-      context.handle(
-        _categoryNameMeta,
-        categoryName.isAcceptableOrUnknown(
-          data['category_name']!,
-          _categoryNameMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_categoryNameMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  SkillCategoryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SkillCategoryRow(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      profileId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}profile_id'],
-      )!,
-      categoryName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}category_name'],
-      )!,
-    );
-  }
-
-  @override
-  $SkillCategoriesTable createAlias(String alias) {
-    return $SkillCategoriesTable(attachedDatabase, alias);
-  }
-}
-
-class SkillCategoryRow extends DataClass
-    implements Insertable<SkillCategoryRow> {
-  final int id;
-  final int profileId;
-  final String categoryName;
-  const SkillCategoryRow({
-    required this.id,
-    required this.profileId,
-    required this.categoryName,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['profile_id'] = Variable<int>(profileId);
-    map['category_name'] = Variable<String>(categoryName);
-    return map;
-  }
-
-  SkillCategoriesCompanion toCompanion(bool nullToAbsent) {
-    return SkillCategoriesCompanion(
-      id: Value(id),
-      profileId: Value(profileId),
-      categoryName: Value(categoryName),
-    );
-  }
-
-  factory SkillCategoryRow.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SkillCategoryRow(
-      id: serializer.fromJson<int>(json['id']),
-      profileId: serializer.fromJson<int>(json['profileId']),
-      categoryName: serializer.fromJson<String>(json['categoryName']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'profileId': serializer.toJson<int>(profileId),
-      'categoryName': serializer.toJson<String>(categoryName),
-    };
-  }
-
-  SkillCategoryRow copyWith({int? id, int? profileId, String? categoryName}) =>
-      SkillCategoryRow(
-        id: id ?? this.id,
-        profileId: profileId ?? this.profileId,
-        categoryName: categoryName ?? this.categoryName,
-      );
-  SkillCategoryRow copyWithCompanion(SkillCategoriesCompanion data) {
-    return SkillCategoryRow(
-      id: data.id.present ? data.id.value : this.id,
-      profileId: data.profileId.present ? data.profileId.value : this.profileId,
-      categoryName: data.categoryName.present
-          ? data.categoryName.value
-          : this.categoryName,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SkillCategoryRow(')
-          ..write('id: $id, ')
-          ..write('profileId: $profileId, ')
-          ..write('categoryName: $categoryName')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, profileId, categoryName);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SkillCategoryRow &&
-          other.id == this.id &&
-          other.profileId == this.profileId &&
-          other.categoryName == this.categoryName);
-}
-
-class SkillCategoriesCompanion extends UpdateCompanion<SkillCategoryRow> {
-  final Value<int> id;
-  final Value<int> profileId;
-  final Value<String> categoryName;
-  const SkillCategoriesCompanion({
-    this.id = const Value.absent(),
-    this.profileId = const Value.absent(),
-    this.categoryName = const Value.absent(),
-  });
-  SkillCategoriesCompanion.insert({
-    this.id = const Value.absent(),
-    required int profileId,
-    required String categoryName,
-  }) : profileId = Value(profileId),
-       categoryName = Value(categoryName);
-  static Insertable<SkillCategoryRow> custom({
-    Expression<int>? id,
-    Expression<int>? profileId,
-    Expression<String>? categoryName,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (profileId != null) 'profile_id': profileId,
-      if (categoryName != null) 'category_name': categoryName,
-    });
-  }
-
-  SkillCategoriesCompanion copyWith({
-    Value<int>? id,
-    Value<int>? profileId,
-    Value<String>? categoryName,
-  }) {
-    return SkillCategoriesCompanion(
-      id: id ?? this.id,
-      profileId: profileId ?? this.profileId,
-      categoryName: categoryName ?? this.categoryName,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (profileId.present) {
-      map['profile_id'] = Variable<int>(profileId.value);
-    }
-    if (categoryName.present) {
-      map['category_name'] = Variable<String>(categoryName.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SkillCategoriesCompanion(')
-          ..write('id: $id, ')
-          ..write('profileId: $profileId, ')
-          ..write('categoryName: $categoryName')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $SkillsTable extends Skills with TableInfo<$SkillsTable, SkillRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1643,9 +1383,6 @@ class $SkillsTable extends Skills with TableInfo<$SkillsTable, SkillRow> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES skill_categories (id)',
-    ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -2514,9 +2251,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $RolesTable roles = $RolesTable(this);
-  late final $SkillCategoriesTable skillCategories = $SkillCategoriesTable(
-    this,
-  );
   late final $SkillsTable skills = $SkillsTable(this);
   late final $EducationHistoriesTable educationHistories =
       $EducationHistoriesTable(this);
@@ -2528,7 +2262,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     profiles,
     workExperiences,
     roles,
-    skillCategories,
     skills,
     educationHistories,
   ];
@@ -2576,29 +2309,6 @@ final class $$ProfilesTableReferences
 
     final cache = $_typedResult.readTableOrNull(
       _workExperiencesRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$SkillCategoriesTable, List<SkillCategoryRow>>
-  _skillCategoriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.skillCategories,
-    aliasName: $_aliasNameGenerator(
-      db.profiles.id,
-      db.skillCategories.profileId,
-    ),
-  );
-
-  $$SkillCategoriesTableProcessedTableManager get skillCategoriesRefs {
-    final manager = $$SkillCategoriesTableTableManager(
-      $_db,
-      $_db.skillCategories,
-    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _skillCategoriesRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -2693,31 +2403,6 @@ class $$ProfilesTableFilterComposer
           }) => $$WorkExperiencesTableFilterComposer(
             $db: $db,
             $table: $db.workExperiences,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> skillCategoriesRefs(
-    Expression<bool> Function($$SkillCategoriesTableFilterComposer f) f,
-  ) {
-    final $$SkillCategoriesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.skillCategories,
-      getReferencedColumn: (t) => t.profileId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillCategoriesTableFilterComposer(
-            $db: $db,
-            $table: $db.skillCategories,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2857,31 +2542,6 @@ class $$ProfilesTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> skillCategoriesRefs<T extends Object>(
-    Expression<T> Function($$SkillCategoriesTableAnnotationComposer a) f,
-  ) {
-    final $$SkillCategoriesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.skillCategories,
-      getReferencedColumn: (t) => t.profileId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillCategoriesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.skillCategories,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> educationHistoriesRefs<T extends Object>(
     Expression<T> Function($$EducationHistoriesTableAnnotationComposer a) f,
   ) {
@@ -2924,7 +2584,6 @@ class $$ProfilesTableTableManager
           ProfileRow,
           PrefetchHooks Function({
             bool workExperiencesRefs,
-            bool skillCategoriesRefs,
             bool educationHistoriesRefs,
           })
         > {
@@ -2984,16 +2643,11 @@ class $$ProfilesTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({
-                workExperiencesRefs = false,
-                skillCategoriesRefs = false,
-                educationHistoriesRefs = false,
-              }) {
+              ({workExperiencesRefs = false, educationHistoriesRefs = false}) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (workExperiencesRefs) db.workExperiences,
-                    if (skillCategoriesRefs) db.skillCategories,
                     if (educationHistoriesRefs) db.educationHistories,
                   ],
                   addJoins: null,
@@ -3014,27 +2668,6 @@ class $$ProfilesTableTableManager
                                 table,
                                 p0,
                               ).workExperiencesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.profileId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (skillCategoriesRefs)
-                        await $_getPrefetchedData<
-                          ProfileRow,
-                          $ProfilesTable,
-                          SkillCategoryRow
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ProfilesTableReferences
-                              ._skillCategoriesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ProfilesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).skillCategoriesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.profileId == item.id,
@@ -3084,7 +2717,6 @@ typedef $$ProfilesTableProcessedTableManager =
       ProfileRow,
       PrefetchHooks Function({
         bool workExperiencesRefs,
-        bool skillCategoriesRefs,
         bool educationHistoriesRefs,
       })
     >;
@@ -3883,384 +3515,6 @@ typedef $$RolesTableProcessedTableManager =
       RoleRow,
       PrefetchHooks Function({bool workExperienceId})
     >;
-typedef $$SkillCategoriesTableCreateCompanionBuilder =
-    SkillCategoriesCompanion Function({
-      Value<int> id,
-      required int profileId,
-      required String categoryName,
-    });
-typedef $$SkillCategoriesTableUpdateCompanionBuilder =
-    SkillCategoriesCompanion Function({
-      Value<int> id,
-      Value<int> profileId,
-      Value<String> categoryName,
-    });
-
-final class $$SkillCategoriesTableReferences
-    extends
-        BaseReferences<_$AppDatabase, $SkillCategoriesTable, SkillCategoryRow> {
-  $$SkillCategoriesTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $ProfilesTable _profileIdTable(_$AppDatabase db) =>
-      db.profiles.createAlias(
-        $_aliasNameGenerator(db.skillCategories.profileId, db.profiles.id),
-      );
-
-  $$ProfilesTableProcessedTableManager get profileId {
-    final $_column = $_itemColumn<int>('profile_id')!;
-
-    final manager = $$ProfilesTableTableManager(
-      $_db,
-      $_db.profiles,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$SkillsTable, List<SkillRow>> _skillsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.skills,
-    aliasName: $_aliasNameGenerator(
-      db.skillCategories.id,
-      db.skills.categoryId,
-    ),
-  );
-
-  $$SkillsTableProcessedTableManager get skillsRefs {
-    final manager = $$SkillsTableTableManager(
-      $_db,
-      $_db.skills,
-    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_skillsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$SkillCategoriesTableFilterComposer
-    extends Composer<_$AppDatabase, $SkillCategoriesTable> {
-  $$SkillCategoriesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get categoryName => $composableBuilder(
-    column: $table.categoryName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$ProfilesTableFilterComposer get profileId {
-    final $$ProfilesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.profileId,
-      referencedTable: $db.profiles,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ProfilesTableFilterComposer(
-            $db: $db,
-            $table: $db.profiles,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> skillsRefs(
-    Expression<bool> Function($$SkillsTableFilterComposer f) f,
-  ) {
-    final $$SkillsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.skills,
-      getReferencedColumn: (t) => t.categoryId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillsTableFilterComposer(
-            $db: $db,
-            $table: $db.skills,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$SkillCategoriesTableOrderingComposer
-    extends Composer<_$AppDatabase, $SkillCategoriesTable> {
-  $$SkillCategoriesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get categoryName => $composableBuilder(
-    column: $table.categoryName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$ProfilesTableOrderingComposer get profileId {
-    final $$ProfilesTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.profileId,
-      referencedTable: $db.profiles,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ProfilesTableOrderingComposer(
-            $db: $db,
-            $table: $db.profiles,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$SkillCategoriesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SkillCategoriesTable> {
-  $$SkillCategoriesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get categoryName => $composableBuilder(
-    column: $table.categoryName,
-    builder: (column) => column,
-  );
-
-  $$ProfilesTableAnnotationComposer get profileId {
-    final $$ProfilesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.profileId,
-      referencedTable: $db.profiles,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ProfilesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.profiles,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> skillsRefs<T extends Object>(
-    Expression<T> Function($$SkillsTableAnnotationComposer a) f,
-  ) {
-    final $$SkillsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.skills,
-      getReferencedColumn: (t) => t.categoryId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.skills,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$SkillCategoriesTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $SkillCategoriesTable,
-          SkillCategoryRow,
-          $$SkillCategoriesTableFilterComposer,
-          $$SkillCategoriesTableOrderingComposer,
-          $$SkillCategoriesTableAnnotationComposer,
-          $$SkillCategoriesTableCreateCompanionBuilder,
-          $$SkillCategoriesTableUpdateCompanionBuilder,
-          (SkillCategoryRow, $$SkillCategoriesTableReferences),
-          SkillCategoryRow,
-          PrefetchHooks Function({bool profileId, bool skillsRefs})
-        > {
-  $$SkillCategoriesTableTableManager(
-    _$AppDatabase db,
-    $SkillCategoriesTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$SkillCategoriesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$SkillCategoriesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$SkillCategoriesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<int> profileId = const Value.absent(),
-                Value<String> categoryName = const Value.absent(),
-              }) => SkillCategoriesCompanion(
-                id: id,
-                profileId: profileId,
-                categoryName: categoryName,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required int profileId,
-                required String categoryName,
-              }) => SkillCategoriesCompanion.insert(
-                id: id,
-                profileId: profileId,
-                categoryName: categoryName,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$SkillCategoriesTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({profileId = false, skillsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (skillsRefs) db.skills],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (profileId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.profileId,
-                                referencedTable:
-                                    $$SkillCategoriesTableReferences
-                                        ._profileIdTable(db),
-                                referencedColumn:
-                                    $$SkillCategoriesTableReferences
-                                        ._profileIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (skillsRefs)
-                    await $_getPrefetchedData<
-                      SkillCategoryRow,
-                      $SkillCategoriesTable,
-                      SkillRow
-                    >(
-                      currentTable: table,
-                      referencedTable: $$SkillCategoriesTableReferences
-                          ._skillsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$SkillCategoriesTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).skillsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.categoryId == item.id),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$SkillCategoriesTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $SkillCategoriesTable,
-      SkillCategoryRow,
-      $$SkillCategoriesTableFilterComposer,
-      $$SkillCategoriesTableOrderingComposer,
-      $$SkillCategoriesTableAnnotationComposer,
-      $$SkillCategoriesTableCreateCompanionBuilder,
-      $$SkillCategoriesTableUpdateCompanionBuilder,
-      (SkillCategoryRow, $$SkillCategoriesTableReferences),
-      SkillCategoryRow,
-      PrefetchHooks Function({bool profileId, bool skillsRefs})
-    >;
 typedef $$SkillsTableCreateCompanionBuilder =
     SkillsCompanion Function({
       Value<int> id,
@@ -4282,30 +3536,6 @@ typedef $$SkillsTableUpdateCompanionBuilder =
       Value<String> relatedCompanyIdsStr,
     });
 
-final class $$SkillsTableReferences
-    extends BaseReferences<_$AppDatabase, $SkillsTable, SkillRow> {
-  $$SkillsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $SkillCategoriesTable _categoryIdTable(_$AppDatabase db) =>
-      db.skillCategories.createAlias(
-        $_aliasNameGenerator(db.skills.categoryId, db.skillCategories.id),
-      );
-
-  $$SkillCategoriesTableProcessedTableManager get categoryId {
-    final $_column = $_itemColumn<int>('category_id')!;
-
-    final manager = $$SkillCategoriesTableTableManager(
-      $_db,
-      $_db.skillCategories,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
 class $$SkillsTableFilterComposer
     extends Composer<_$AppDatabase, $SkillsTable> {
   $$SkillsTableFilterComposer({
@@ -4317,6 +3547,11 @@ class $$SkillsTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get categoryId => $composableBuilder(
+    column: $table.categoryId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4344,29 +3579,6 @@ class $$SkillsTableFilterComposer
     column: $table.relatedCompanyIdsStr,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$SkillCategoriesTableFilterComposer get categoryId {
-    final $$SkillCategoriesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.categoryId,
-      referencedTable: $db.skillCategories,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillCategoriesTableFilterComposer(
-            $db: $db,
-            $table: $db.skillCategories,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$SkillsTableOrderingComposer
@@ -4380,6 +3592,11 @@ class $$SkillsTableOrderingComposer
   });
   ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get categoryId => $composableBuilder(
+    column: $table.categoryId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4407,29 +3624,6 @@ class $$SkillsTableOrderingComposer
     column: $table.relatedCompanyIdsStr,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$SkillCategoriesTableOrderingComposer get categoryId {
-    final $$SkillCategoriesTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.categoryId,
-      referencedTable: $db.skillCategories,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillCategoriesTableOrderingComposer(
-            $db: $db,
-            $table: $db.skillCategories,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$SkillsTableAnnotationComposer
@@ -4443,6 +3637,11 @@ class $$SkillsTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get categoryId => $composableBuilder(
+    column: $table.categoryId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -4466,29 +3665,6 @@ class $$SkillsTableAnnotationComposer
     column: $table.relatedCompanyIdsStr,
     builder: (column) => column,
   );
-
-  $$SkillCategoriesTableAnnotationComposer get categoryId {
-    final $$SkillCategoriesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.categoryId,
-      referencedTable: $db.skillCategories,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SkillCategoriesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.skillCategories,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$SkillsTableTableManager
@@ -4502,9 +3678,9 @@ class $$SkillsTableTableManager
           $$SkillsTableAnnotationComposer,
           $$SkillsTableCreateCompanionBuilder,
           $$SkillsTableUpdateCompanionBuilder,
-          (SkillRow, $$SkillsTableReferences),
+          (SkillRow, BaseReferences<_$AppDatabase, $SkillsTable, SkillRow>),
           SkillRow,
-          PrefetchHooks Function({bool categoryId})
+          PrefetchHooks Function()
         > {
   $$SkillsTableTableManager(_$AppDatabase db, $SkillsTable table)
     : super(
@@ -4554,52 +3730,9 @@ class $$SkillsTableTableManager
                 relatedCompanyIdsStr: relatedCompanyIdsStr,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) =>
-                    (e.readTable(table), $$SkillsTableReferences(db, table, e)),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({categoryId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (categoryId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.categoryId,
-                                referencedTable: $$SkillsTableReferences
-                                    ._categoryIdTable(db),
-                                referencedColumn: $$SkillsTableReferences
-                                    ._categoryIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -4614,9 +3747,9 @@ typedef $$SkillsTableProcessedTableManager =
       $$SkillsTableAnnotationComposer,
       $$SkillsTableCreateCompanionBuilder,
       $$SkillsTableUpdateCompanionBuilder,
-      (SkillRow, $$SkillsTableReferences),
+      (SkillRow, BaseReferences<_$AppDatabase, $SkillsTable, SkillRow>),
       SkillRow,
-      PrefetchHooks Function({bool categoryId})
+      PrefetchHooks Function()
     >;
 typedef $$EducationHistoriesTableCreateCompanionBuilder =
     EducationHistoriesCompanion Function({
@@ -4978,8 +4111,6 @@ class $AppDatabaseManager {
       $$WorkExperiencesTableTableManager(_db, _db.workExperiences);
   $$RolesTableTableManager get roles =>
       $$RolesTableTableManager(_db, _db.roles);
-  $$SkillCategoriesTableTableManager get skillCategories =>
-      $$SkillCategoriesTableTableManager(_db, _db.skillCategories);
   $$SkillsTableTableManager get skills =>
       $$SkillsTableTableManager(_db, _db.skills);
   $$EducationHistoriesTableTableManager get educationHistories =>

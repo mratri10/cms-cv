@@ -1,7 +1,9 @@
 class CvData {
   Config config;
   Profile profile;
-  List<SkillCategory> skillCategories;
+  List<Skill> languageSkills;
+  List<Skill> softSkills;
+  List<Skill> hardSkills;
   List<WorkExperience> workExperience;
   List<EducationHistory> educationHistory;
   Map<String, dynamic> localization;
@@ -9,7 +11,9 @@ class CvData {
   CvData({
     required this.config,
     required this.profile,
-    required this.skillCategories,
+    required this.languageSkills,
+    required this.softSkills,
+    required this.hardSkills,
     required this.workExperience,
     required this.educationHistory,
     required this.localization,
@@ -19,9 +23,31 @@ class CvData {
     return CvData(
       config: Config.fromJson(json['config'] ?? {}),
       profile: Profile.fromJson(json['profile'] ?? {}),
-      skillCategories: (json['skill_categories'] as List?)?.map((e) => SkillCategory.fromJson(e)).toList() ?? [],
-      workExperience: (json['work_experience'] as List?)?.map((e) => WorkExperience.fromJson(e)).toList() ?? [],
-      educationHistory: (json['education_history'] as List?)?.map((e) => EducationHistory.fromJson(e)).toList() ?? [],
+      languageSkills:
+          (json['language_skills'] as List?)
+              ?.map((e) => Skill.fromJson(e))
+              .toList() ??
+          [],
+      softSkills:
+          (json['soft_skills'] as List?)
+              ?.map((e) => Skill.fromJson(e))
+              .toList() ??
+          [],
+      hardSkills:
+          (json['hard_skills'] as List?)
+              ?.map((e) => Skill.fromJson(e))
+              .toList() ??
+          [],
+      workExperience:
+          (json['work_experience'] as List?)
+              ?.map((e) => WorkExperience.fromJson(e))
+              .toList() ??
+          [],
+      educationHistory:
+          (json['education_history'] as List?)
+              ?.map((e) => EducationHistory.fromJson(e))
+              .toList() ??
+          [],
       localization: json['localization'] ?? {},
     );
   }
@@ -30,7 +56,9 @@ class CvData {
     return {
       'config': config.toJson(),
       'profile': profile.toJson(),
-      'skill_categories': skillCategories.map((e) => e.toJson()).toList(),
+      'language_skills': languageSkills.map((e) => e.toJson()).toList(),
+      'soft_skills': softSkills.map((e) => e.toJson()).toList(),
+      'hard_skills': hardSkills.map((e) => e.toJson()).toList(),
       'work_experience': workExperience.map((e) => e.toJson()).toList(),
       'education_history': educationHistory.map((e) => e.toJson()).toList(),
       'localization': localization,
@@ -39,9 +67,23 @@ class CvData {
 
   factory CvData.empty() {
     return CvData(
-      config: Config(currentLanguage: 'en', cvFormat: 'international', availableFormats: ['international'], themeColor: '#6200EA', fontFamily: 'Inter'),
-      profile: Profile(fullName: '', appliedJobs: [], lifeMotto: '', summary: '', personalDetails: PersonalDetails.empty()),
-      skillCategories: [],
+      config: Config(
+        currentLanguage: 'en',
+        cvFormat: 'international',
+        availableFormats: ['international'],
+        themeColor: '#6200EA',
+        fontFamily: 'Inter',
+      ),
+      profile: Profile(
+        fullName: '',
+        appliedJobs: [],
+        lifeMotto: '',
+        summary: '',
+        personalDetails: PersonalDetails.empty(),
+      ),
+      languageSkills: [],
+      softSkills: [],
+      hardSkills: [],
       workExperience: [],
       educationHistory: [],
       localization: {},
@@ -56,7 +98,13 @@ class Config {
   String themeColor;
   String fontFamily;
 
-  Config({required this.currentLanguage, required this.cvFormat, required this.availableFormats, required this.themeColor, required this.fontFamily});
+  Config({
+    required this.currentLanguage,
+    required this.cvFormat,
+    required this.availableFormats,
+    required this.themeColor,
+    required this.fontFamily,
+  });
 
   factory Config.fromJson(Map<String, dynamic> json) {
     return Config(
@@ -86,7 +134,13 @@ class Profile {
   String summary;
   PersonalDetails personalDetails;
 
-  Profile({required this.fullName, required this.appliedJobs, required this.lifeMotto, required this.summary, required this.personalDetails});
+  Profile({
+    required this.fullName,
+    required this.appliedJobs,
+    required this.lifeMotto,
+    required this.summary,
+    required this.personalDetails,
+  });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
@@ -116,7 +170,13 @@ class PersonalDetails {
   String nationality;
   String maritalStatus;
 
-  PersonalDetails({required this.birthDate, required this.gender, required this.address, required this.nationality, required this.maritalStatus});
+  PersonalDetails({
+    required this.birthDate,
+    required this.gender,
+    required this.address,
+    required this.nationality,
+    required this.maritalStatus,
+  });
 
   factory PersonalDetails.fromJson(Map<String, dynamic> json) {
     return PersonalDetails(
@@ -137,29 +197,14 @@ class PersonalDetails {
       'marital_status': maritalStatus,
     };
   }
-  
-  factory PersonalDetails.empty() => PersonalDetails(birthDate: '', gender: '', address: '', nationality: '', maritalStatus: '');
-}
 
-class SkillCategory {
-  String categoryName;
-  List<Skill> skills;
-
-  SkillCategory({required this.categoryName, required this.skills});
-
-  factory SkillCategory.fromJson(Map<String, dynamic> json) {
-    return SkillCategory(
-      categoryName: json['category_name'] ?? '',
-      skills: (json['skills'] as List?)?.map((e) => Skill.fromJson(e)).toList() ?? [],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'category_name': categoryName,
-      'skills': skills.map((e) => e.toJson()).toList(),
-    };
-  }
+  factory PersonalDetails.empty() => PersonalDetails(
+    birthDate: '',
+    gender: '',
+    address: '',
+    nationality: '',
+    maritalStatus: '',
+  );
 }
 
 class Skill {
@@ -223,7 +268,8 @@ class WorkExperience {
       companyName: json['company_name'] ?? '',
       phoneNumber: json['phone_number'] ?? '',
       officeImages: List<String>.from(json['office_images'] ?? []),
-      roles: (json['roles'] as List?)?.map((e) => Role.fromJson(e)).toList() ?? [],
+      roles:
+          (json['roles'] as List?)?.map((e) => Role.fromJson(e)).toList() ?? [],
     );
   }
 
@@ -284,7 +330,12 @@ class EducationHistory {
   String endDate;
   String major;
 
-  EducationHistory({required this.schoolName, required this.startDate, required this.endDate, required this.major});
+  EducationHistory({
+    required this.schoolName,
+    required this.startDate,
+    required this.endDate,
+    required this.major,
+  });
 
   factory EducationHistory.fromJson(Map<String, dynamic> json) {
     return EducationHistory(

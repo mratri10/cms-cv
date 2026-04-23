@@ -36,17 +36,11 @@ class Roles extends Table {
   BoolColumn get isCurrent => boolean()();
 }
 
-@DataClassName('SkillCategoryRow')
-class SkillCategories extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get profileId => integer().references(Profiles, #id)();
-  TextColumn get categoryName => text()();
-}
 
 @DataClassName('SkillRow')
 class Skills extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get categoryId => integer().references(SkillCategories, #id)();
+  IntColumn get categoryId => integer()();
   TextColumn get name => text()();
   TextColumn get description => text()();
   BoolColumn get isCertified => boolean()();
@@ -69,7 +63,6 @@ class EducationHistories extends Table {
     Profiles,
     WorkExperiences,
     Roles,
-    SkillCategories,
     Skills,
     EducationHistories,
   ],
